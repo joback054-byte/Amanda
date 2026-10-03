@@ -1,0 +1,907 @@
+/* ============================================================
+   Amanda Agent — shared.js v3.0 (STABLE)
+   ============================================================ */
+
+/* ---------- THEME ---------- */
+var THEME = 'light';
+var ACCENT = 'pink';
+var ACCENTS = ['pink', 'purple', 'blue', 'gold', 'green'];
+
+try {
+  THEME = localStorage.getItem('ea_theme') || 'light';
+  ACCENT = localStorage.getItem('ea_accent') || 'pink';
+} catch (e) {}
+
+function applyTheme() {
+  document.documentElement.setAttribute('data-theme', THEME);
+  document.documentElement.setAttribute('data-accent', ACCENT);
+  var b = document.getElementById('themeBtn');
+  if (b) b.textContent = THEME === 'dark' ? '☀️' : '🌙';
+  if (typeof applyLogo === 'function') applyLogo();
+  if (typeof applyCover === 'function') applyCover();
+}
+function toggleTheme() {
+  THEME = THEME === 'dark' ? 'light' : 'dark';
+  try { localStorage.setItem('ea_theme', THEME); } catch (e) {}
+  applyTheme();
+}
+function cycleAccent() {
+  var i = ACCENTS.indexOf(ACCENT);
+  ACCENT = ACCENTS[(i + 1) % ACCENTS.length];
+  try { localStorage.setItem('ea_accent', ACCENT); } catch (e) {}
+  applyTheme();
+}
+
+/* ---------- LANG ---------- */
+var LANG = 'am';
+var LANGS = [
+  { code: 'am', flag: '🇪🇹', name: 'አማርኛ' },
+  { code: 'en', flag: '🇬🇧', name: 'English' },
+  { code: 'fr', flag: '🇫🇷', name: 'Français' },
+  { code: 'ar', flag: '🇸🇦', name: 'العربية' },
+  { code: 'it', flag: '🇮🇹', name: 'Italiano' },
+  { code: 'es', flag: '🇪🇸', name: 'Español' }
+];
+try { LANG = localStorage.getItem('ea_lang') || 'am'; } catch (e) {}
+
+/* ---------- TRANSLATIONS ---------- */
+var TRANS = {
+  am: {
+    brand_sub: 'Fashion & Beauty', control_panel: 'Control Panel',
+    owner_badge: 'OWNER',
+    nav_home: 'Home', nav_profile: 'Profile', nav_messages: 'Messages',
+    nav_stats: 'Stats', nav_dash: 'Dash', nav_support: 'Support', nav_fav: 'Favorites',
+    login: 'ግባ', register: 'ተመዝገብ', logout: 'ውጣ',
+    tab_login: '🔑 ግባ', tab_register: '✨ ተመዝገብ', tab_apply: '🌟 Model',
+    lbl_username: 'የተጠቃሚ ስም / ስልክ', lbl_password: 'የይለፍ ቃል',
+    lbl_name: 'ሙሉ ስም', lbl_username2: 'የተጠቃሚ ስም',
+    lbl_phone: 'ስልክ ቁጥር', lbl_pass: 'የይለፍ ቃል', lbl_confirm: 'የይለፍ ቃል ያረጋግጡ',
+    lbl_age: 'ዕድሜ', lbl_bio: 'ስለ ራስሽ', lbl_photos2: 'ፎቶዎች (2 ግዴታ)',
+    btn_login: '🔓 ግባ', btn_login_model: '🌟 Login as Model',
+    btn_register: '✨ ተመዝገብ', btn_apply: '🌟 ማመልከቻ አስገባ',
+    btn_back: '← ተመለስ', btn_back2: '← ተመለስ',
+    btn_save: '💾 አስቀምጥ', btn_cancel: 'ሰርዝ', btn_cancel2: 'ሰርዝ',
+    btn_yes: 'አዎ', btn_no: 'አይ', btn_send: '📤 ላክ',
+    auth_login_t: 'እንኳን ደህና መጡ',
+    auth_login_d: 'በተጠቃሚ ስምዎ ወይም በስልክ ቁጥርዎ ይግቡ',
+    auth_reg_t: 'አዲስ አካውንት',
+    auth_reg_d: 'ሙሉ ስም፣ Username እና ስልክ ያስፈልጋል',
+    auth_apply_t: '🌟 Apply for Model',
+    auth_apply_d: 'የሞዴልነት ማመልከቻ ያስገቡ',
+    divider_or: 'ወይም', demo_owner_hint: 'Demo: owner · 123456',
+    model_login_hint: '🌟 ተቀባይነት ያገኙ ሞዴሎች ብቻ',
+    apply_hint: '🌟 ኦነሩ ሲቀበልዎ ብቻ መግባት ይችላሉ',
+    photo1: 'ፎቶ 1', photo2: 'ፎቶ 2',
+    hero_badge: '✨ አዲስ ዘመናዊ መድረክ',
+    hero_t1: 'ውበትዎን የሚያሳዩ', hero_t2: 'ምርጥ ሞዴሎች',
+    hero_sub: 'Amanda Agent ላይ ለሴቶች የተዘጋጁ ዘመናዊ እቃዎችን እና ሞዴሎችን በቀላሉ ይመልከቱ።',
+    hero_start: 'አሁን ይጀምሩ', hero_model: 'Model ሁን',
+    stat_profiles: 'ጠቅላላ ፕሮፋይሎች', stat_photos: 'ጠቅላላ ፎቶዎች', stat_hours: 'የስራ ሰዓት',
+    stat_models: 'Models', stat_customers: 'Customers', stat_pending: 'Pending',
+    stat_messages: 'መልእክቶች', stat_favs: 'Favorites', stat_views: 'እይታዎች',
+    stat_photos_owner: 'ፎቶዎች', stat_updates: 'Updates',
+    feat1_t: 'የተረጋገጡ ሞዴሎች', feat1_d: 'እያንዳንዱ ሞዴል በኦነሩ ተረጋግጦ የተመዘገበ ነው።',
+    feat2_t: 'ፈጣን ግንኙነት', feat2_d: 'በቴሌግራም እና በዋትሳፕ በቀጥታ ይገናኙ።',
+    feat3_t: 'ሞዴል ይሁኑ', feat3_d: 'የሞዴልነት ማመልከቻ ያስገቡ እና ተቀባይነት ያግኙ።',
+    contact_us: 'ያግኙን', contact_sub: 'ማንኛውም ጥያቄ ካለዎት ያግኙን።', address: 'አድራሻ',
+    footer_contact: '📞 Contact', footer_address: '📍 Address', footer_about: 'ℹ️ About',
+    footer_about_text: 'Amanda Agent — ለሴቶች የተዘጋጁ ዘመናዊ የፋሽን እቃዎች።',
+    footer_hours: 'ሰኞ - ቅዳሜ · 8:00 - 20:00',
+    footer_rights: '© Amanda Agent - መብቱ በህግ የተጠበቀ ነው።',
+    welcome: 'እንኳን ደህና መጡ', welcome_sub: 'ዘመናዊ ሞዴሎችን ይመልከቱ',
+    view_only: '🔒 View Only',
+    st_all: 'ሁሉም', st_favorites: 'የወደድኳቸው', st_recent: 'የተመለከትኳቸው', st_photos3: 'ፎቶዎች',
+    search_model: 'ሞዴል ይፈልጉ...',
+    tab_all: 'ሁሉም', tab_favorites: 'የወደድኳቸው', tab_recent: 'የተመለከትኳቸው',
+    btn_view: '👁️ ይመልከቱ',
+    no_models: 'ምንም ሞዴል የለም', no_results: 'ምንም አልተገኘም',
+    no_favorites: 'ምንም የወደዱት የለም', no_recent: 'ምንም የተመለከቱት የለም',
+    about_her: 'ስለ እሷ', gallery: 'የፎቶ ማህደር', info: 'መረጃ', ratings: '⭐ ደረጃዎች',
+    verified: '✓ የተረጋገጠ', favorite: '🤍 አስቀምጥ', favorited: '❤️ ተቀምጧል',
+    fast_text: '💬 Fast Text', contact_now: 'አሁን ያግኙ',
+    support_title: '🎧 Support', support_sub: 'የኦነሩን አገልግሎት ይጠቀሙ',
+    support_chat_t: 'ከኦነር ጋር ቀጥታ ይወያዩ', support_chat_d: 'መልእክት ይላኩ',
+    support_msg: 'ጥያቄ ወይም አስተያየት', support_send: '📤 ላክ',
+    support_tab_ft: '💬 Fast Text', support_tab_sup: '🎧 Support',
+    support_ft_sub: 'ከሞዴሎች ጋር', support_sup_sub: 'ከኦነር ጋር',
+    support_ft_title: '💬 ከሞዴሎች ጋር ውይይት', support_ft_list: 'ዝርዝር',
+    no_convo: 'ምንም ውይይት የለም',
+    no_convo_sub: 'ስለ ሞዴል ለመጠየቅ ፕሮፋይል ከፍተው "Fast Text" ይጫኑ',
+    no_msgs: 'ምንም መልእክት የለም',
+    my_profile: 'የእኔ ፕሮፋይል', my_profile_sub: 'የግል መረጃዎን ያስተካክሉ',
+    edit_profile: '✏️ መረጃ አስተካክል', edit_profile_sub: 'ወደ ኦነር ይላካል',
+    chat_owner: '💬 ከኦነር ጋር', chat_owner_sub: 'ቀጥታ መልእክት',
+    my_photos: 'የእኔ ፎቶዎች', my_info: 'የእኔ መረጃ',
+    edit_title: '✏️ ፕሮፋይል አስተካክል',
+    edit_note: 'የሚቀይሩት መረጃ ወደ ኦነር Update File ይሄዳል',
+    pending_note_t: 'ማሳሰቢያ',
+    pending_note_d: 'ለውጦቹ በቀጥታ አይተገበሩም — ኦነሩ ሲያጸድቅ ብቻ ይታያሉ።',
+    lbl_full_name: 'ሙሉ ስም *', lbl_age2: 'ዕድሜ',
+    lbl_phone_ro: 'ስልክ (ማስተካከል አይቻልም)',
+    lbl_username_ro: 'Username (ማስተካከል አይቻልም)',
+    lbl_telegram: 'የቴሌግራም ቁጥር', lbl_whatsapp: 'የዋትሳፕ ቁጥር',
+    lbl_bio2: 'ዝርዝር መረጃ', lbl_photos4: 'ፎቶዎች (ማከል ብቻ)',
+    btn_send_owner: '📤 ወደ ኦነር ላክ', avatar_hint: 'ፎቶ ለመለወጥ ይንኩ',
+    owner_home_t: '🏠 ሞዴሎች', owner_home_d: 'ሁሉንም ሞዴሎች ያስተዳድሩ',
+    owner_add: '＋ አዲስ ሞዴል', owner_add_t: '＋ አዲስ ሞዴል',
+    owner_edit_t: '✏️ አስተካክል', owner_add_d: 'የሞዴሉን መረጃ እና ፎቶዎች ያስገቡ',
+    owner_profile_t: '👤 ፕሮፋይሎች',
+    owner_profile_d: 'ሞዴሎች፣ ደንበኞች፣ Pending እና Updates',
+    sub_models: '👥 Models', sub_customers: '👤 Customers',
+    sub_pending: '⏳ Pending', sub_updates: '📝 Updates',
+    owner_msgs_t: '💬 መልእክቶች', owner_msgs_d: 'ከደንበኞች እና ከሞዴሎች',
+    msg_all: 'ሁሉም', msg_ft: '💬 Fast Text', msg_sup: '🎧 Support',
+    owner_stats_t: '📊 ስታቲስቲክስ', owner_stats_d: 'የዌብሳይቱ አጠቃላይ መረጃ',
+    owner_dash_t: '⚙️ ዳሽቦርድ', owner_dash_d: 'የዌብሳይቱን ቅንብሮች ያስተካክሉ',
+    site_info: '🏢 የዌብሳይት መረጃ',
+    site_name_l: 'የዌብሳይት ስም', site_tagline_l: 'ንዑስ ርዕስ',
+    site_logo_l: '🎨 ሎጎ', site_cover_l: '🖼️ Cover Photo',
+    site_upload: '📷 ፎቶ ጫን', site_url: '🔗 URL', site_remove: '🗑️ አጥፋ',
+    site_contact_t: '📞 Contact Center',
+    site_tg: 'ቴሌግራም', site_wa: 'ዋትሳፕ', site_email: 'ኢሜይል',
+    site_phone: 'ስልክ', site_address: 'አድራሻ', site_hours: 'የስራ ሰዓት',
+    site_footer_t: '📝 የፉተር ጽሑፍ', site_about: 'About ጽሑፍ',
+    btn_save_set: '💾 አስቀምጥ', btn_reset_set: '↺ ወደ ነባሪ',
+    confirm_t: 'እርግጠኛ ነዎት?', confirm_del: 'ማጥፋት ይፈልጋሉ?',
+    chat_placeholder: 'መልእክት ይጻፉ...', ask_model: 'ስለ ሞዴሉ ይጠይቁ...',
+    notif_t: '🔔 ማሳወቂያዎች', notif_read: 'ሁሉንም አንብብ',
+    notif_empty: 'ምንም ማሳወቂያ የለም',
+    me_title: 'የእኔ ፕሮፋይል', me_sub: 'የግል መረጃዎን ያስተካክሉ',
+    sec_security: '🔒 Security', sec_change_pwd: '🔑 Change Password',
+    pwd_current: 'የአሁኑ የይለፍ ቃል', pwd_new: 'አዲስ የይለፍ ቃል',
+    pwd_confirm: 'ያረጋግጡ', btn_update_pwd: '🔑 Update Password',
+    menu_edit: 'የእኔን ፕሮፋይል አስተካክል',
+    menu_chat: 'ከኦነር ጋር ተወያይ',
+    menu_logout: 'ውጣ',
+    lbl_msg: 'መልእክት',
+    edit: '✏️', del: '🗑️',
+    approve: '✅ ተቀበል', reject: '❌ ውድቅ',
+    code: 'ኮድ'
+  },
+  en: {
+    brand_sub: 'Fashion & Beauty', control_panel: 'Control Panel', owner_badge: 'OWNER',
+    nav_home: 'Home', nav_profile: 'Profile', nav_messages: 'Messages',
+    nav_stats: 'Stats', nav_dash: 'Dash', nav_support: 'Support', nav_fav: 'Favorites',
+    login: 'Login', register: 'Register', logout: 'Logout',
+    tab_login: '🔑 Login', tab_register: '✨ Register', tab_apply: '🌟 Model',
+    lbl_username: 'Username / Phone', lbl_password: 'Password',
+    lbl_name: 'Full Name', lbl_username2: 'Username',
+    lbl_phone: 'Phone Number', lbl_pass: 'Password', lbl_confirm: 'Confirm Password',
+    lbl_age: 'Age', lbl_bio: 'Bio', lbl_photos2: 'Photos (2 required)',
+    btn_login: '🔓 Login', btn_login_model: '🌟 Login as Model',
+    btn_register: '✨ Register', btn_apply: '🌟 Submit',
+    btn_back: '← Back', btn_back2: '← Back',
+    btn_save: '💾 Save', btn_cancel: 'Cancel', btn_cancel2: 'Cancel',
+    btn_yes: 'Yes', btn_no: 'No', btn_send: '📤 Send',
+    auth_login_t: 'Welcome Back', auth_login_d: 'Login with username or phone',
+    auth_reg_t: 'Create Account', auth_reg_d: 'Full name, username and phone',
+    auth_apply_t: '🌟 Apply for Model', auth_apply_d: 'Submit your application',
+    divider_or: 'OR', demo_owner_hint: 'Demo: owner · 123456',
+    model_login_hint: '🌟 Approved models only', apply_hint: '🌟 Only after approval',
+    photo1: 'Photo 1', photo2: 'Photo 2',
+    hero_badge: '✨ A brand new fashion stage',
+    hero_t1: 'Discover the', hero_t2: 'Finest Models',
+    hero_sub: 'Explore modern products and models made for women on Amanda Agent.',
+    hero_start: 'Get Started', hero_model: 'Become a Model',
+    stat_profiles: 'Total Profiles', stat_photos: 'Total Photos', stat_hours: 'Working Hours',
+    stat_models: 'Models', stat_customers: 'Customers', stat_pending: 'Pending',
+    stat_messages: 'Messages', stat_favs: 'Favorites', stat_views: 'Views',
+    stat_photos_owner: 'Photos', stat_updates: 'Updates',
+    feat1_t: 'Verified Models', feat1_d: 'Every profile is verified by the owner.',
+    feat2_t: 'Instant Contact', feat2_d: 'Reach out via Telegram and WhatsApp.',
+    feat3_t: 'Become a Model', feat3_d: 'Submit your application and get approved.',
+    contact_us: 'Contact Us', contact_sub: 'Reach us for any question.', address: 'Address',
+    footer_contact: '📞 Contact', footer_address: '📍 Address', footer_about: 'ℹ️ About',
+    footer_about_text: 'Amanda Agent — Modern fashion items made for women.',
+    footer_hours: 'Mon-Sat · 8:00-20:00', footer_rights: '© Amanda Agent',
+    welcome: 'Welcome', welcome_sub: 'Browse modern models', view_only: '🔒 View Only',
+    st_all: 'All', st_favorites: 'Favorites', st_recent: 'Recently Viewed', st_photos3: 'Photos',
+    search_model: 'Search a model...',
+    tab_all: 'All', tab_favorites: 'Favorites', tab_recent: 'Recently Viewed',
+    btn_view: '👁️ View', no_models: 'No models yet', no_results: 'No results',
+    no_favorites: 'No favorites yet', no_recent: 'Nothing viewed yet',
+    about_her: 'About Her', gallery: 'Gallery', info: 'Info', ratings: '⭐ Ratings',
+    verified: '✓ Verified', favorite: '🤍 Save', favorited: '❤️ Saved',
+    fast_text: '💬 Fast Text', contact_now: 'Contact Now',
+    support_title: '🎧 Support', support_sub: 'Use owner services',
+    support_chat_t: 'Chat with Owner', support_chat_d: 'Send a message',
+    support_msg: 'Question or feedback', support_send: '📤 Send',
+    support_tab_ft: '💬 Fast Text', support_tab_sup: '🎧 Support',
+    support_ft_sub: 'With models', support_sup_sub: 'With owner',
+    support_ft_title: '💬 Chat with Models', support_ft_list: 'List',
+    no_convo: 'No conversations', no_convo_sub: 'Tap "Fast Text" on a profile',
+    no_msgs: 'No messages',
+    my_profile: 'My Profile', my_profile_sub: 'Update your info',
+    edit_profile: '✏️ Edit Profile', edit_profile_sub: 'Sent to owner',
+    chat_owner: '💬 Chat with Owner', chat_owner_sub: 'Direct message',
+    my_photos: 'My Photos', my_info: 'My Info',
+    edit_title: '✏️ Edit Profile', edit_note: 'Changes go to owner',
+    pending_note_t: 'Notice', pending_note_d: 'Applied after owner approval.',
+    lbl_full_name: 'Full Name *', lbl_age2: 'Age',
+    lbl_phone_ro: 'Phone (read-only)', lbl_username_ro: 'Username (read-only)',
+    lbl_telegram: 'Telegram', lbl_whatsapp: 'WhatsApp',
+    lbl_bio2: 'Bio', lbl_photos4: 'Photos (add only)',
+    btn_send_owner: '📤 Send to Owner', avatar_hint: 'Tap to change photo',
+    owner_home_t: '🏠 Models', owner_home_d: 'Manage all models',
+    owner_add: '＋ New Model', owner_add_t: '＋ New Model',
+    owner_edit_t: '✏️ Edit', owner_add_d: 'Enter model info and photos',
+    owner_profile_t: '👤 Profiles', owner_profile_d: 'Models, Customers, Pending',
+    sub_models: '👥 Models', sub_customers: '👤 Customers',
+    sub_pending: '⏳ Pending', sub_updates: '📝 Updates',
+    owner_msgs_t: '💬 Messages', owner_msgs_d: 'From customers',
+    msg_all: 'All', msg_ft: '💬 Fast Text', msg_sup: '🎧 Support',
+    owner_stats_t: '📊 Statistics', owner_stats_d: 'Site overview',
+    owner_dash_t: '⚙️ Dashboard', owner_dash_d: 'Configure site',
+    site_info: '🏢 Site Info', site_name_l: 'Site Name', site_tagline_l: 'Tagline',
+    site_logo_l: '🎨 Logo', site_cover_l: '🖼️ Cover Photo',
+    site_upload: '📷 Upload', site_url: '🔗 URL', site_remove: '🗑️ Remove',
+    site_contact_t: '📞 Contact Center',
+    site_tg: 'Telegram', site_wa: 'WhatsApp', site_email: 'Email',
+    site_phone: 'Phone', site_address: 'Address', site_hours: 'Hours',
+    site_footer_t: '📝 Footer Text', site_about: 'About',
+    btn_save_set: '💾 Save', btn_reset_set: '↺ Reset',
+    confirm_t: 'Are you sure?', confirm_del: 'Delete this?',
+    chat_placeholder: 'Type a message...', ask_model: 'Ask about the model...',
+    notif_t: '🔔 Notifications', notif_read: 'Mark all read',
+    notif_empty: 'No notifications',
+    me_title: 'My Profile', me_sub: 'Update your info',
+    sec_security: '🔒 Security', sec_change_pwd: '🔑 Change Password',
+    pwd_current: 'Current Password', pwd_new: 'New Password',
+    pwd_confirm: 'Confirm', btn_update_pwd: '🔑 Update Password',
+    menu_edit: 'Edit My Profile', menu_chat: 'Chat with Owner', menu_logout: 'Logout',
+    lbl_msg: 'Message',
+    edit: '✏️', del: '🗑️', approve: '✅ Approve', reject: '❌ Reject',
+    code: 'Code'
+  },
+  fr: {
+    brand_sub: 'Mode & Beauté', control_panel: 'Panneau', owner_badge: 'PROPRIÉTAIRE',
+    nav_home: 'Accueil', nav_profile: 'Profil', nav_messages: 'Messages',
+    nav_stats: 'Stats', nav_dash: 'Config', nav_support: 'Support', nav_fav: 'Favoris',
+    login: 'Connexion', register: 'Inscription', logout: 'Déconnexion',
+    tab_login: '🔑 Connexion', tab_register: '✨ Inscription', tab_apply: '🌟 Modèle',
+    lbl_username: 'Utilisateur / Téléphone', lbl_password: 'Mot de passe',
+    lbl_name: 'Nom complet', lbl_username2: 'Utilisateur',
+    lbl_phone: 'Téléphone', lbl_pass: 'Mot de passe', lbl_confirm: 'Confirmer',
+    lbl_age: 'Âge', lbl_bio: 'Bio', lbl_photos2: 'Photos (2 requises)',
+    btn_login: '🔓 Connexion', btn_login_model: '🌟 Login Modèle',
+    btn_register: '✨ S\'inscrire', btn_apply: '🌟 Envoyer',
+    btn_back: '← Retour', btn_back2: '← Retour',
+    btn_save: '💾 Enregistrer', btn_cancel: 'Annuler', btn_cancel2: 'Annuler',
+    btn_yes: 'Oui', btn_no: 'Non', btn_send: '📤 Envoyer',
+    auth_login_t: 'Bon retour', auth_login_d: 'Connectez-vous',
+    auth_reg_t: 'Créer compte', auth_reg_d: 'Nom, utilisateur et téléphone',
+    auth_apply_t: '🌟 Candidature', auth_apply_d: 'Soumettez votre candidature',
+    divider_or: 'OU', demo_owner_hint: 'Demo: owner · 123456',
+    model_login_hint: '🌟 Modèles approuvés', apply_hint: '🌟 Après approbation',
+    photo1: 'Photo 1', photo2: 'Photo 2',
+    hero_badge: '✨ Nouvelle scène', hero_t1: 'Découvrez les', hero_t2: 'Meilleurs Modèles',
+    hero_sub: 'Explorez sur Amanda Agent.', hero_start: 'Commencer', hero_model: 'Devenir Modèle',
+    stat_profiles: 'Profils', stat_photos: 'Photos', stat_hours: 'Heures',
+    stat_models: 'Modèles', stat_customers: 'Clients', stat_pending: 'Attente',
+    stat_messages: 'Messages', stat_favs: 'Favoris', stat_views: 'Vues',
+    stat_photos_owner: 'Photos', stat_updates: 'MAJ',
+    feat1_t: 'Modèles Vérifiés', feat1_d: 'Chaque profil est vérifié.',
+    feat2_t: 'Contact Instantané', feat2_d: 'Via Telegram et WhatsApp.',
+    feat3_t: 'Devenir Modèle', feat3_d: 'Soumettez votre candidature.',
+    contact_us: 'Contactez-nous', contact_sub: 'Pour toute question.', address: 'Adresse',
+    footer_contact: '📞 Contact', footer_address: '📍 Adresse', footer_about: 'ℹ️ À propos',
+    footer_about_text: 'Amanda Agent — Mode pour femmes.',
+    footer_hours: 'Lun-Sam · 8h-20h', footer_rights: '© Amanda Agent',
+    welcome: 'Bienvenue', welcome_sub: 'Parcourir les modèles', view_only: '🔒 Vue seule',
+    st_all: 'Tous', st_favorites: 'Favoris', st_recent: 'Récents', st_photos3: 'Photos',
+    search_model: 'Rechercher...', tab_all: 'Tous', tab_favorites: 'Favoris', tab_recent: 'Récents',
+    btn_view: '👁️ Voir', no_models: 'Aucun modèle', no_results: 'Aucun résultat',
+    no_favorites: 'Aucun favori', no_recent: 'Rien vu',
+    about_her: 'À propos', gallery: 'Galerie', info: 'Info', ratings: '⭐ Notes',
+    verified: '✓ Vérifié', favorite: '🤍 Sauver', favorited: '❤️ Sauvé',
+    fast_text: '💬 Fast Text', contact_now: 'Contacter',
+    support_title: '🎧 Support', support_sub: 'Services du propriétaire',
+    support_chat_t: 'Chat Propriétaire', support_chat_d: 'Envoyer un message',
+    support_msg: 'Question', support_send: '📤 Envoyer',
+    support_tab_ft: '💬 Fast Text', support_tab_sup: '🎧 Support',
+    support_ft_sub: 'Avec modèles', support_sup_sub: 'Avec propriétaire',
+    support_ft_title: '💬 Chat avec Modèles', support_ft_list: 'Liste',
+    no_convo: 'Aucune conversation', no_convo_sub: 'Touchez "Fast Text"',
+    no_msgs: 'Aucun message',
+    my_profile: 'Mon Profil', my_profile_sub: 'Modifier vos infos',
+    edit_profile: '✏️ Modifier', edit_profile_sub: 'Envoyé au propriétaire',
+    chat_owner: '💬 Chat Propriétaire', chat_owner_sub: 'Message direct',
+    my_photos: 'Mes Photos', my_info: 'Mes Infos',
+    edit_title: '✏️ Modifier', edit_note: 'Va au propriétaire',
+    pending_note_t: 'Avis', pending_note_d: 'Approuvé par le propriétaire.',
+    lbl_full_name: 'Nom complet *', lbl_age2: 'Âge',
+    lbl_phone_ro: 'Téléphone (lecture seule)', lbl_username_ro: 'Utilisateur (lecture seule)',
+    lbl_telegram: 'Telegram', lbl_whatsapp: 'WhatsApp',
+    lbl_bio2: 'Bio', lbl_photos4: 'Photos (ajout)',
+    btn_send_owner: '📤 Envoyer', avatar_hint: 'Touchez pour changer',
+    owner_home_t: '🏠 Modèles', owner_home_d: 'Gérer les modèles',
+    owner_add: '＋ Nouveau', owner_add_t: '＋ Nouveau',
+    owner_edit_t: '✏️ Modifier', owner_add_d: 'Infos et photos',
+    owner_profile_t: '👤 Profils', owner_profile_d: 'Modèles, Clients, Attente',
+    sub_models: '👥 Modèles', sub_customers: '👤 Clients',
+    sub_pending: '⏳ Attente', sub_updates: '📝 MAJ',
+    owner_msgs_t: '💬 Messages', owner_msgs_d: 'Des clients',
+    msg_all: 'Tous', msg_ft: '💬 Fast Text', msg_sup: '🎧 Support',
+    owner_stats_t: '📊 Stats', owner_stats_d: 'Aperçu',
+    owner_dash_t: '⚙️ Config', owner_dash_d: 'Configurer le site',
+    site_info: '🏢 Info Site', site_name_l: 'Nom', site_tagline_l: 'Slogan',
+    site_logo_l: '🎨 Logo', site_cover_l: '🖼️ Couverture',
+    site_upload: '📷 Télécharger', site_url: '🔗 URL', site_remove: '🗑️ Supprimer',
+    site_contact_t: '📞 Contact',
+    site_tg: 'Telegram', site_wa: 'WhatsApp', site_email: 'Email',
+    site_phone: 'Téléphone', site_address: 'Adresse', site_hours: 'Heures',
+    site_footer_t: '📝 Pied', site_about: 'À propos',
+    btn_save_set: '💾 Enregistrer', btn_reset_set: '↺ Réinitialiser',
+    confirm_t: 'Êtes-vous sûr?', confirm_del: 'Supprimer?',
+    chat_placeholder: 'Écrire...', ask_model: 'Poser une question...',
+    notif_t: '🔔 Notifications', notif_read: 'Tout lire', notif_empty: 'Aucune',
+    me_title: 'Mon Profil', me_sub: 'Modifier vos infos',
+    sec_security: '🔒 Sécurité', sec_change_pwd: '🔑 Changer mot de passe',
+    pwd_current: 'Actuel', pwd_new: 'Nouveau', pwd_confirm: 'Confirmer',
+    btn_update_pwd: '🔑 Mettre à jour',
+    menu_edit: 'Modifier profil', menu_chat: 'Chat propriétaire', menu_logout: 'Déconnexion',
+    lbl_msg: 'Message',
+    edit: '✏️', del: '🗑️', approve: '✅ Approuver', reject: '❌ Rejeter',
+    code: 'Code'
+  },
+  ar: {
+    brand_sub: 'أزياء وجمال', control_panel: 'لوحة التحكم', owner_badge: 'المالك',
+    nav_home: 'الرئيسية', nav_profile: 'الملف', nav_messages: 'الرسائل',
+    nav_stats: 'إحصائيات', nav_dash: 'التحكم', nav_support: 'الدعم', nav_fav: 'المفضلة',
+    login: 'دخول', register: 'تسجيل', logout: 'خروج',
+    tab_login: '🔑 دخول', tab_register: '✨ تسجيل', tab_apply: '🌟 عارضة',
+    lbl_username: 'المستخدم / الهاتف', lbl_password: 'كلمة المرور',
+    lbl_name: 'الاسم الكامل', lbl_username2: 'المستخدم',
+    lbl_phone: 'الهاتف', lbl_pass: 'كلمة المرور', lbl_confirm: 'تأكيد',
+    lbl_age: 'العمر', lbl_bio: 'نبذة', lbl_photos2: 'صورتان',
+    btn_login: '🔓 دخول', btn_login_model: '🌟 دخول كعارضة',
+    btn_register: '✨ تسجيل', btn_apply: '🌟 إرسال',
+    btn_back: '← رجوع', btn_back2: '← رجوع',
+    btn_save: '💾 حفظ', btn_cancel: 'إلغاء', btn_cancel2: 'إلغاء',
+    btn_yes: 'نعم', btn_no: 'لا', btn_send: '📤 إرسال',
+    auth_login_t: 'مرحبًا', auth_login_d: 'سجّل بالمستخدم أو الهاتف',
+    auth_reg_t: 'حساب جديد', auth_reg_d: 'الاسم والمستخدم والهاتف',
+    auth_apply_t: '🌟 طلب عارضة', auth_apply_d: 'أرسلي طلبك',
+    divider_or: 'أو', demo_owner_hint: 'Demo: owner · 123456',
+    model_login_hint: '🌟 العارضات المعتمدات', apply_hint: '🌟 بعد الموافقة',
+    photo1: 'صورة 1', photo2: 'صورة 2',
+    hero_badge: '✨ منصة جديدة', hero_t1: 'اكتشفي', hero_t2: 'أفضل العارضات',
+    hero_sub: 'استكشفي على Amanda Agent.', hero_start: 'ابدئي', hero_model: 'كوني عارضة',
+    stat_profiles: 'الملفات', stat_photos: 'الصور', stat_hours: 'ساعات',
+    stat_models: 'العارضات', stat_customers: 'العملاء', stat_pending: 'انتظار',
+    stat_messages: 'الرسائل', stat_favs: 'المفضلة', stat_views: 'المشاهدات',
+    stat_photos_owner: 'الصور', stat_updates: 'تحديثات',
+    feat1_t: 'موثوقات', feat1_d: 'كل ملف موثق.',
+    feat2_t: 'تواصل فوري', feat2_d: 'تيليجرام وواتساب.',
+    feat3_t: 'كوني عارضة', feat3_d: 'أرسلي طلبك.',
+    contact_us: 'اتصل بنا', contact_sub: 'لأي سؤال.', address: 'العنوان',
+    footer_contact: '📞 التواصل', footer_address: '📍 العنوان', footer_about: 'ℹ️ نبذة',
+    footer_about_text: 'Amanda Agent — أزياء للنساء.',
+    footer_hours: 'الإثنين-السبت · 8-20', footer_rights: '© Amanda Agent',
+    welcome: 'مرحبًا', welcome_sub: 'تصفح العارضات', view_only: '🔒 عرض فقط',
+    st_all: 'الكل', st_favorites: 'المفضلة', st_recent: 'شوهدت', st_photos3: 'الصور',
+    search_model: 'ابحث...', tab_all: 'الكل', tab_favorites: 'المفضلة', tab_recent: 'شوهدت',
+    btn_view: '👁️ عرض', no_models: 'لا توجد عارضات', no_results: 'لا نتائج',
+    no_favorites: 'لا مفضلة', no_recent: 'لا يوجد',
+    about_her: 'نبذة', gallery: 'المعرض', info: 'معلومات', ratings: '⭐ التقييمات',
+    verified: '✓ موثّق', favorite: '🤍 حفظ', favorited: '❤️ محفوظ',
+    fast_text: '💬 نص سريع', contact_now: 'تواصل الآن',
+    support_title: '🎧 الدعم', support_sub: 'خدمات المالك',
+    support_chat_t: 'دردشة المالك', support_chat_d: 'أرسل رسالة',
+    support_msg: 'سؤال', support_send: '📤 إرسال',
+    support_tab_ft: '💬 نص سريع', support_tab_sup: '🎧 الدعم',
+    support_ft_sub: 'مع العارضات', support_sup_sub: 'مع المالك',
+    support_ft_title: '💬 دردشة العارضات', support_ft_list: 'قائمة',
+    no_convo: 'لا محادثات', no_convo_sub: 'اضغطي "نص سريع"', no_msgs: 'لا رسائل',
+    my_profile: 'ملفي', my_profile_sub: 'عدّلي بياناتك',
+    edit_profile: '✏️ تعديل', edit_profile_sub: 'يُرسل للمالك',
+    chat_owner: '💬 دردشة المالك', chat_owner_sub: 'رسالة مباشرة',
+    my_photos: 'صوري', my_info: 'معلوماتي',
+    edit_title: '✏️ تعديل الملف', edit_note: 'يذهب للمالك',
+    pending_note_t: 'تنبيه', pending_note_d: 'بعد موافقة المالك.',
+    lbl_full_name: 'الاسم *', lbl_age2: 'العمر',
+    lbl_phone_ro: 'الهاتف (قراءة فقط)', lbl_username_ro: 'المستخدم (قراءة فقط)',
+    lbl_telegram: 'تيليجرام', lbl_whatsapp: 'واتساب',
+    lbl_bio2: 'نبذة', lbl_photos4: 'صور (إضافة)',
+    btn_send_owner: '📤 إرسال', avatar_hint: 'اضغطي لتغيير الصورة',
+    owner_home_t: '🏠 العارضات', owner_home_d: 'إدارة العارضات',
+    owner_add: '＋ جديدة', owner_add_t: '＋ عارضة جديدة',
+    owner_edit_t: '✏️ تعديل', owner_add_d: 'المعلومات والصور',
+    owner_profile_t: '👤 الملفات', owner_profile_d: 'العارضات والعملاء',
+    sub_models: '👥 العارضات', sub_customers: '👤 العملاء',
+    sub_pending: '⏳ انتظار', sub_updates: '📝 تحديثات',
+    owner_msgs_t: '💬 الرسائل', owner_msgs_d: 'من العملاء',
+    msg_all: 'الكل', msg_ft: '💬 نص سريع', msg_sup: '🎧 الدعم',
+    owner_stats_t: '📊 إحصائيات', owner_stats_d: 'نظرة عامة',
+    owner_dash_t: '⚙️ التحكم', owner_dash_d: 'إعدادات الموقع',
+    site_info: '🏢 معلومات الموقع', site_name_l: 'الاسم', site_tagline_l: 'الشعار',
+    site_logo_l: '🎨 الشعار', site_cover_l: '🖼️ الغلاف',
+    site_upload: '📷 رفع', site_url: '🔗 URL', site_remove: '🗑️ حذف',
+    site_contact_t: '📞 التواصل',
+    site_tg: 'تيليجرام', site_wa: 'واتساب', site_email: 'البريد',
+    site_phone: 'الهاتف', site_address: 'العنوان', site_hours: 'الساعات',
+    site_footer_t: '📝 التذييل', site_about: 'نبذة',
+    btn_save_set: '💾 حفظ', btn_reset_set: '↺ إعادة',
+    confirm_t: 'هل أنت متأكد؟', confirm_del: 'حذف؟',
+    chat_placeholder: 'اكتبي...', ask_model: 'اسألي...',
+    notif_t: '🔔 الإشعارات', notif_read: 'قراءة الكل', notif_empty: 'لا إشعارات',
+    me_title: 'ملفي', me_sub: 'عدّلي بياناتك',
+    sec_security: '🔒 الأمان', sec_change_pwd: '🔑 تغيير كلمة المرور',
+    pwd_current: 'الحالية', pwd_new: 'الجديدة', pwd_confirm: 'تأكيد',
+    btn_update_pwd: '🔑 تحديث',
+    menu_edit: 'تعديل ملفي', menu_chat: 'دردشة المالك', menu_logout: 'خروج',
+    lbl_msg: 'رسالة',
+    edit: '✏️', del: '🗑️', approve: '✅ موافقة', reject: '❌ رفض',
+    code: 'كود'
+  },
+  it: {
+    brand_sub: 'Moda & Bellezza', control_panel: 'Pannello', owner_badge: 'PROPRIETARIO',
+    nav_home: 'Home', nav_profile: 'Profilo', nav_messages: 'Messaggi',
+    nav_stats: 'Stats', nav_dash: 'Config', nav_support: 'Supporto', nav_fav: 'Preferite',
+    login: 'Accedi', register: 'Registrati', logout: 'Esci',
+    tab_login: '🔑 Accedi', tab_register: '✨ Registrati', tab_apply: '🌟 Modella',
+    lbl_username: 'Username / Telefono', lbl_password: 'Password',
+    lbl_name: 'Nome completo', lbl_username2: 'Username',
+    lbl_phone: 'Telefono', lbl_pass: 'Password', lbl_confirm: 'Conferma',
+    lbl_age: 'Età', lbl_bio: 'Bio', lbl_photos2: 'Foto (2 richieste)',
+    btn_login: '🔓 Accedi', btn_login_model: '🌟 Login Modella',
+    btn_register: '✨ Registrati', btn_apply: '🌟 Invia',
+    btn_back: '← Indietro', btn_back2: '← Indietro',
+    btn_save: '💾 Salva', btn_cancel: 'Annulla', btn_cancel2: 'Annulla',
+    btn_yes: 'Sì', btn_no: 'No', btn_send: '📤 Invia',
+    auth_login_t: 'Bentornata', auth_login_d: 'Accedi',
+    auth_reg_t: 'Crea account', auth_reg_d: 'Nome, username e telefono',
+    auth_apply_t: '🌟 Candidatura', auth_apply_d: 'Invia candidatura',
+    divider_or: 'OPPURE', demo_owner_hint: 'Demo: owner · 123456',
+    model_login_hint: '🌟 Solo modelle approvate', apply_hint: '🌟 Dopo approvazione',
+    photo1: 'Foto 1', photo2: 'Foto 2',
+    hero_badge: '✨ Nuova scena', hero_t1: 'Scopri le', hero_t2: 'Migliori Modelle',
+    hero_sub: 'Esplora su Amanda Agent.', hero_start: 'Inizia', hero_model: 'Diventa Modella',
+    stat_profiles: 'Profili', stat_photos: 'Foto', stat_hours: 'Orari',
+    stat_models: 'Modelle', stat_customers: 'Clienti', stat_pending: 'Attesa',
+    stat_messages: 'Messaggi', stat_favs: 'Preferite', stat_views: 'Viste',
+    stat_photos_owner: 'Foto', stat_updates: 'Agg.',
+    feat1_t: 'Verificate', feat1_d: 'Ogni profilo verificato.',
+    feat2_t: 'Contatto', feat2_d: 'Telegram e WhatsApp.',
+    feat3_t: 'Diventa Modella', feat3_d: 'Invia candidatura.',
+    contact_us: 'Contattaci', contact_sub: 'Per domande.', address: 'Indirizzo',
+    footer_contact: '📞 Contatti', footer_address: '📍 Indirizzo', footer_about: 'ℹ️ Info',
+    footer_about_text: 'Amanda Agent — Moda per donne.',
+    footer_hours: 'Lun-Sab · 8-20', footer_rights: '© Amanda Agent',
+    welcome: 'Benvenuta', welcome_sub: 'Sfoglia modelle', view_only: '🔒 Solo vista',
+    st_all: 'Tutte', st_favorites: 'Preferite', st_recent: 'Recenti', st_photos3: 'Foto',
+    search_model: 'Cerca...', tab_all: 'Tutte', tab_favorites: 'Preferite', tab_recent: 'Recenti',
+    btn_view: '👁️ Vedi', no_models: 'Nessuna', no_results: 'Nessun risultato',
+    no_favorites: 'Nessuna preferita', no_recent: 'Niente',
+    about_her: 'Su di lei', gallery: 'Galleria', info: 'Info', ratings: '⭐ Valutazioni',
+    verified: '✓ Verificata', favorite: '🤍 Salva', favorited: '❤️ Salvato',
+    fast_text: '💬 Fast Text', contact_now: 'Contatta',
+    support_title: '🎧 Supporto', support_sub: 'Servizi proprietario',
+    support_chat_t: 'Chat Proprietario', support_chat_d: 'Invia messaggio',
+    support_msg: 'Domanda', support_send: '📤 Invia',
+    support_tab_ft: '💬 Fast Text', support_tab_sup: '🎧 Supporto',
+    support_ft_sub: 'Con modelle', support_sup_sub: 'Con proprietario',
+    support_ft_title: '💬 Chat Modelle', support_ft_list: 'Elenco',
+    no_convo: 'Nessuna conversazione', no_convo_sub: 'Tocca "Fast Text"', no_msgs: 'Nessun messaggio',
+    my_profile: 'Mio Profilo', my_profile_sub: 'Modifica i tuoi dati',
+    edit_profile: '✏️ Modifica', edit_profile_sub: 'Inviato al proprietario',
+    chat_owner: '💬 Chat Proprietario', chat_owner_sub: 'Messaggio diretto',
+    my_photos: 'Mie Foto', my_info: 'Mie Info',
+    edit_title: '✏️ Modifica', edit_note: 'Le modifiche vanno al proprietario',
+    pending_note_t: 'Avviso', pending_note_d: 'Approvate dal proprietario.',
+    lbl_full_name: 'Nome completo *', lbl_age2: 'Età',
+    lbl_phone_ro: 'Telefono (solo lettura)', lbl_username_ro: 'Username (solo lettura)',
+    lbl_telegram: 'Telegram', lbl_whatsapp: 'WhatsApp',
+    lbl_bio2: 'Bio', lbl_photos4: 'Foto (solo aggiunta)',
+    btn_send_owner: '📤 Invia', avatar_hint: 'Tocca per cambiare',
+    owner_home_t: '🏠 Modelle', owner_home_d: 'Gestisci modelle',
+    owner_add: '＋ Nuova', owner_add_t: '＋ Nuova',
+    owner_edit_t: '✏️ Modifica', owner_add_d: 'Info e foto',
+    owner_profile_t: '👤 Profili', owner_profile_d: 'Modelle, Clienti, Attesa',
+    sub_models: '👥 Modelle', sub_customers: '👤 Clienti',
+    sub_pending: '⏳ Attesa', sub_updates: '📝 Agg.',
+    owner_msgs_t: '💬 Messaggi', owner_msgs_d: 'Da clienti',
+    msg_all: 'Tutti', msg_ft: '💬 Fast Text', msg_sup: '🎧 Supporto',
+    owner_stats_t: '📊 Stats', owner_stats_d: 'Panoramica',
+    owner_dash_t: '⚙️ Config', owner_dash_d: 'Configura sito',
+    site_info: '🏢 Info Sito', site_name_l: 'Nome', site_tagline_l: 'Slogan',
+    site_logo_l: '🎨 Logo', site_cover_l: '🖼️ Copertina',
+    site_upload: '📷 Carica', site_url: '🔗 URL', site_remove: '🗑️ Rimuovi',
+    site_contact_t: '📞 Contatti',
+    site_tg: 'Telegram', site_wa: 'WhatsApp', site_email: 'Email',
+    site_phone: 'Telefono', site_address: 'Indirizzo', site_hours: 'Orari',
+    site_footer_t: '📝 Footer', site_about: 'Info',
+    btn_save_set: '💾 Salva', btn_reset_set: '↺ Ripristina',
+    confirm_t: 'Sei sicuro?', confirm_del: 'Eliminare?',
+    chat_placeholder: 'Scrivi...', ask_model: 'Chiedi...',
+    notif_t: '🔔 Notifiche', notif_read: 'Segna tutto', notif_empty: 'Nessuna',
+    me_title: 'Mio Profilo', me_sub: 'Modifica i tuoi dati',
+    sec_security: '🔒 Sicurezza', sec_change_pwd: '🔑 Cambia password',
+    pwd_current: 'Attuale', pwd_new: 'Nuova', pwd_confirm: 'Conferma',
+    btn_update_pwd: '🔑 Aggiorna',
+    menu_edit: 'Modifica profilo', menu_chat: 'Chat proprietario', menu_logout: 'Esci',
+    lbl_msg: 'Messaggio',
+    edit: '✏️', del: '🗑️', approve: '✅ Approva', reject: '❌ Rifiuta',
+    code: 'Codice'
+  },
+  es: {
+    brand_sub: 'Moda & Belleza', control_panel: 'Panel', owner_badge: 'PROPIETARIO',
+    nav_home: 'Inicio', nav_profile: 'Perfil', nav_messages: 'Mensajes',
+    nav_stats: 'Stats', nav_dash: 'Config', nav_support: 'Soporte', nav_fav: 'Favoritas',
+    login: 'Entrar', register: 'Registrarse', logout: 'Salir',
+    tab_login: '🔑 Entrar', tab_register: '✨ Registrarse', tab_apply: '🌟 Modelo',
+    lbl_username: 'Usuario / Teléfono', lbl_password: 'Contraseña',
+    lbl_name: 'Nombre completo', lbl_username2: 'Usuario',
+    lbl_phone: 'Teléfono', lbl_pass: 'Contraseña', lbl_confirm: 'Confirmar',
+    lbl_age: 'Edad', lbl_bio: 'Bio', lbl_photos2: 'Fotos (2 requeridas)',
+    btn_login: '🔓 Entrar', btn_login_model: '🌟 Login Modelo',
+    btn_register: '✨ Registrarse', btn_apply: '🌟 Enviar',
+    btn_back: '← Volver', btn_back2: '← Volver',
+    btn_save: '💾 Guardar', btn_cancel: 'Cancelar', btn_cancel2: 'Cancelar',
+    btn_yes: 'Sí', btn_no: 'No', btn_send: '📤 Enviar',
+    auth_login_t: 'Bienvenida', auth_login_d: 'Ingresa',
+    auth_reg_t: 'Crear cuenta', auth_reg_d: 'Nombre, usuario y teléfono',
+    auth_apply_t: '🌟 Solicitud', auth_apply_d: 'Envía solicitud',
+    divider_or: 'O', demo_owner_hint: 'Demo: owner · 123456',
+    model_login_hint: '🌟 Solo modelos aprobadas', apply_hint: '🌟 Tras aprobación',
+    photo1: 'Foto 1', photo2: 'Foto 2',
+    hero_badge: '✨ Nueva escena', hero_t1: 'Descubre las', hero_t2: 'Mejores Modelos',
+    hero_sub: 'Explora en Amanda Agent.', hero_start: 'Empezar', hero_model: 'Ser Modelo',
+    stat_profiles: 'Perfiles', stat_photos: 'Fotos', stat_hours: 'Horario',
+    stat_models: 'Modelos', stat_customers: 'Clientes', stat_pending: 'Pendientes',
+    stat_messages: 'Mensajes', stat_favs: 'Favoritas', stat_views: 'Vistas',
+    stat_photos_owner: 'Fotos', stat_updates: 'Act.',
+    feat1_t: 'Verificadas', feat1_d: 'Cada perfil verificado.',
+    feat2_t: 'Contacto', feat2_d: 'Telegram y WhatsApp.',
+    feat3_t: 'Ser Modelo', feat3_d: 'Envía solicitud.',
+    contact_us: 'Contáctanos', contact_sub: 'Para dudas.', address: 'Dirección',
+    footer_contact: '📞 Contacto', footer_address: '📍 Dirección', footer_about: 'ℹ️ Acerca',
+    footer_about_text: 'Amanda Agent — Moda para mujeres.',
+    footer_hours: 'Lun-Sáb · 8-20', footer_rights: '© Amanda Agent',
+    welcome: 'Bienvenida', welcome_sub: 'Explora modelos', view_only: '🔒 Solo ver',
+    st_all: 'Todas', st_favorites: 'Favoritas', st_recent: 'Recientes', st_photos3: 'Fotos',
+    search_model: 'Buscar...', tab_all: 'Todas', tab_favorites: 'Favoritas', tab_recent: 'Recientes',
+    btn_view: '👁️ Ver', no_models: 'Sin modelos', no_results: 'Sin resultados',
+    no_favorites: 'Sin favoritas', no_recent: 'Nada visto',
+    about_her: 'Sobre ella', gallery: 'Galería', info: 'Info', ratings: '⭐ Valoraciones',
+    verified: '✓ Verificada', favorite: '🤍 Guardar', favorited: '❤️ Guardado',
+    fast_text: '💬 Fast Text', contact_now: 'Contactar',
+    support_title: '🎧 Soporte', support_sub: 'Servicios del propietario',
+    support_chat_t: 'Chat Propietario', support_chat_d: 'Enviar mensaje',
+    support_msg: 'Pregunta', support_send: '📤 Enviar',
+    support_tab_ft: '💬 Fast Text', support_tab_sup: '🎧 Soporte',
+    support_ft_sub: 'Con modelos', support_sup_sub: 'Con propietario',
+    support_ft_title: '💬 Chat con Modelos', support_ft_list: 'Lista',
+    no_convo: 'Sin conversaciones', no_convo_sub: 'Toca "Fast Text"', no_msgs: 'Sin mensajes',
+    my_profile: 'Mi Perfil', my_profile_sub: 'Edita tu información',
+    edit_profile: '✏️ Editar', edit_profile_sub: 'Enviado al propietario',
+    chat_owner: '💬 Chat Propietario', chat_owner_sub: 'Mensaje directo',
+    my_photos: 'Mis Fotos', my_info: 'Mi Info',
+    edit_title: '✏️ Editar', edit_note: 'Va al propietario',
+    pending_note_t: 'Aviso', pending_note_d: 'Aprobados por el propietario.',
+    lbl_full_name: 'Nombre completo *', lbl_age2: 'Edad',
+    lbl_phone_ro: 'Teléfono (solo lectura)', lbl_username_ro: 'Usuario (solo lectura)',
+    lbl_telegram: 'Telegram', lbl_whatsapp: 'WhatsApp',
+    lbl_bio2: 'Bio', lbl_photos4: 'Fotos (agregar)',
+    btn_send_owner: '📤 Enviar', avatar_hint: 'Toca para cambiar',
+    owner_home_t: '🏠 Modelos', owner_home_d: 'Gestionar modelos',
+    owner_add: '＋ Nuevo', owner_add_t: '＋ Nuevo',
+    owner_edit_t: '✏️ Editar', owner_add_d: 'Info y fotos',
+    owner_profile_t: '👤 Perfiles', owner_profile_d: 'Modelos, Clientes, Pendientes',
+    sub_models: '👥 Modelos', sub_customers: '👤 Clientes',
+    sub_pending: '⏳ Pendientes', sub_updates: '📝 Act.',
+    owner_msgs_t: '💬 Mensajes', owner_msgs_d: 'De clientes',
+    msg_all: 'Todos', msg_ft: '💬 Fast Text', msg_sup: '🎧 Soporte',
+    owner_stats_t: '📊 Stats', owner_stats_d: 'Resumen',
+    owner_dash_t: '⚙️ Panel', owner_dash_d: 'Configurar sitio',
+    site_info: '🏢 Info Sitio', site_name_l: 'Nombre', site_tagline_l: 'Eslogan',
+    site_logo_l: '🎨 Logo', site_cover_l: '🖼️ Portada',
+    site_upload: '📷 Subir', site_url: '🔗 URL', site_remove: '🗑️ Quitar',
+    site_contact_t: '📞 Contacto',
+    site_tg: 'Telegram', site_wa: 'WhatsApp', site_email: 'Correo',
+    site_phone: 'Teléfono', site_address: 'Dirección', site_hours: 'Horario',
+    site_footer_t: '📝 Pie', site_about: 'Acerca',
+    btn_save_set: '💾 Guardar', btn_reset_set: '↺ Restablecer',
+    confirm_t: '¿Estás seguro?', confirm_del: '¿Eliminar?',
+    chat_placeholder: 'Escribe...', ask_model: 'Pregunta...',
+    notif_t: '🔔 Notificaciones', notif_read: 'Leer todo', notif_empty: 'Sin notificaciones',
+    me_title: 'Mi Perfil', me_sub: 'Edita tu información',
+    sec_security: '🔒 Seguridad', sec_change_pwd: '🔑 Cambiar contraseña',
+    pwd_current: 'Actual', pwd_new: 'Nueva', pwd_confirm: 'Confirmar',
+    btn_update_pwd: '🔑 Actualizar',
+    menu_edit: 'Editar perfil', menu_chat: 'Chat propietario', menu_logout: 'Salir',
+    lbl_msg: 'Mensaje',
+    edit: '✏️', del: '🗑️', approve: '✅ Aprobar', reject: '❌ Rechazar',
+    code: 'Código'
+  }
+};
+
+function T(k) {
+  if (!k) return '';
+  return (TRANS[LANG] && TRANS[LANG][k]) || TRANS.en[k] || k;
+}
+
+/* ---------- LANG RENDER ---------- */
+function renderLangMenu() {
+  var el = document.getElementById('langMenu');
+  if (!el) return;
+  var h = '';
+  for (var i = 0; i < LANGS.length; i++) {
+    var l = LANGS[i];
+    h += '<button class="lang-item ' + (l.code === LANG ? 'on' : '') + '" onclick="setLang(\'' + l.code + '\')"><span>' + l.flag + '</span><span>' + l.name + '</span></button>';
+  }
+  el.innerHTML = h;
+  var fb = document.getElementById('flagBtn');
+  if (fb) {
+    for (var j = 0; j < LANGS.length; j++) {
+      if (LANGS[j].code === LANG) { fb.textContent = LANGS[j].flag; break; }
+    }
+  }
+}
+
+function toggleLangMenu(e) {
+  if (e) e.stopPropagation();
+  var all = document.querySelectorAll('.lang-wrap,.notif-wrap,.user-menu-wrap');
+  for (var i = 0; i < all.length; i++) all[i].classList.remove('open');
+  var w = document.getElementById('langWrap');
+  if (w) w.classList.toggle('open');
+}
+
+function setLang(c) {
+  LANG = c;
+  try { localStorage.setItem('ea_lang', c); } catch (e) {}
+  var w = document.getElementById('langWrap');
+  if (w) w.classList.remove('open');
+  renderLangMenu();
+  applyLang();
+  if (typeof toast === 'function') {
+    var found = '';
+    for (var i = 0; i < LANGS.length; i++) if (LANGS[i].code === c) found = LANGS[i].name;
+    toast('🌐 ' + found, 'ok');
+  }
+}
+
+function applyLang() {
+  var els = document.querySelectorAll('[data-i18n]');
+  for (var i = 0; i < els.length; i++) {
+    var k = els[i].getAttribute('data-i18n');
+    var v = T(k);
+    if (v && v !== k) els[i].textContent = v;
+  }
+  var phs = document.querySelectorAll('[data-i18n-ph]');
+  for (var j = 0; j < phs.length; j++) {
+    var k2 = phs[j].getAttribute('data-i18n-ph');
+    var v2 = T(k2);
+    if (v2 && v2 !== k2) phs[j].placeholder = v2;
+  }
+  document.documentElement.lang = LANG;
+  document.documentElement.dir = (LANG === 'ar') ? 'rtl' : 'ltr';
+}
+
+/* ---------- UTILS ---------- */
+function esc(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, function(c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+  });
+}
+function initials(n) {
+  return (n || 'U').trim().split(/\s+/).slice(0, 2).map(function(w) { return w[0] || ''; }).join('').toUpperCase();
+}
+function uid(p) {
+  return p + '_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+}
+function onlyDigits(s) { return String(s || '').replace(/\D/g, ''); }
+function timeAgo(t) {
+  var d = Date.now() - t;
+  var m = Math.floor(d / 60000);
+  if (m < 1) return 'now';
+  if (m < 60) return m + 'm';
+  var h = Math.floor(m / 60);
+  if (h < 24) return h + 'h';
+  return Math.floor(h / 24) + 'd';
+}
+function toast(m, type) {
+  type = type || '';
+  var el = document.createElement('div');
+  el.className = 'toast ' + type;
+  el.innerHTML = '<span>' + (type === 'err' ? '⚠️' : '✅') + '</span><span>' + esc(m) + '</span>';
+  document.body.appendChild(el);
+  setTimeout(function() {
+    el.style.opacity = '0';
+    el.style.transition = '.3s';
+    setTimeout(function() { el.remove(); }, 320);
+  }, 2400);
+}
+function readImage(file, max, cb) {
+  var fr = new FileReader();
+  fr.onload = function() {
+    var img = new Image();
+    img.onload = function() {
+      var w = img.width, h = img.height;
+      var s = Math.min(1, max / Math.max(w, h));
+      w = Math.round(w * s);
+      h = Math.round(h * s);
+      var c = document.createElement('canvas');
+      c.width = w; c.height = h;
+      c.getContext('2d').drawImage(img, 0, 0, w, h);
+      try { cb(c.toDataURL('image/jpeg', 0.78)); } catch (e) {}
+    };
+    img.src = fr.result;
+  };
+  fr.readAsDataURL(file);
+}
+
+/* ---------- DB ---------- */
+function loadDB() {
+  var db = { users: [], profiles: [], messages: [], updates: [], blocks: [], settings: {} };
+  try { db.users = JSON.parse(localStorage.getItem('ea_users') || '[]'); } catch (e) {}
+  try { db.profiles = JSON.parse(localStorage.getItem('ea_profiles') || '[]'); } catch (e) {}
+  try { db.messages = JSON.parse(localStorage.getItem('ea_messages') || '[]'); } catch (e) {}
+  try { db.updates = JSON.parse(localStorage.getItem('ea_updates') || '[]'); } catch (e) {}
+  try { db.blocks = JSON.parse(localStorage.getItem('ea_blocks') || '[]'); } catch (e) {}
+  try { db.settings = JSON.parse(localStorage.getItem('ea_settings') || '{}'); } catch (e) {}
+
+  /* Sanity check */
+  if (!Array.isArray(db.users)) db.users = [];
+  if (!Array.isArray(db.profiles)) db.profiles = [];
+  if (!Array.isArray(db.messages)) db.messages = [];
+  if (!Array.isArray(db.updates)) db.updates = [];
+  if (!db.settings || typeof db.settings !== 'object') db.settings = {};
+
+  return db;
+}
+function saveDB(db) {
+  if (!db) return;
+  try { localStorage.setItem('ea_users', JSON.stringify(db.users || [])); } catch (e) {}
+  try { localStorage.setItem('ea_profiles', JSON.stringify(db.profiles || [])); } catch (e) {}
+  try { localStorage.setItem('ea_messages', JSON.stringify(db.messages || [])); } catch (e) {}
+  try { localStorage.setItem('ea_updates', JSON.stringify(db.updates || [])); } catch (e) {}
+  try { localStorage.setItem('ea_blocks', JSON.stringify(db.blocks || [])); } catch (e) {}
+  try { localStorage.setItem('ea_settings', JSON.stringify(db.settings || {})); } catch (e) {}
+}
+function findUser(q) {
+  var db = loadDB();
+  q = String(q || '').trim().toLowerCase();
+  if (!q) return null;
+  for (var i = 0; i < db.users.length; i++) {
+    if (db.users[i].username && db.users[i].username.toLowerCase() === q) return db.users[i];
+  }
+  var qd = onlyDigits(q);
+  if (qd.length >= 6) {
+    for (var j = 0; j < db.users.length; j++) {
+      if (!db.users[j].phone) continue;
+      var pd = onlyDigits(db.users[j].phone);
+      if (pd === qd) return db.users[j];
+      if (qd.length >= 9 && pd.slice(-qd.length) === qd) return db.users[j];
+    }
+  }
+  return null;
+}
+function saveSession(u) {
+  try {
+    sessionStorage.setItem('ea_current', u.id);
+  } catch (e) {}
+}
+function getCurrentUser() {
+  var id = null;
+  try { id = sessionStorage.getItem('ea_current'); } catch (e) {}
+  if (!id) return null;
+  var db = loadDB();
+  for (var i = 0; i < db.users.length; i++) {
+    if (db.users[i].id === id) return db.users[i];
+  }
+  return null;
+}
+function goTo(p) {
+  try { window.location.href = p; } catch (e) { location.replace(p); }
+}
+function logout() {
+  try { sessionStorage.removeItem('ea_current'); } catch (e) {}
+  try { sessionStorage.clear(); } catch (e) {}
+  try { localStorage.removeItem('ea_current_ls'); } catch (e) {}
+  try { window.location.replace('index.html'); } catch (e) {
+    window.location.href = 'index.html';
+  }
+}
+
+/* ---------- LOGO / COVER ---------- */
+function applyLogo() {
+  var s = {};
+  try { s = JSON.parse(localStorage.getItem('ea_settings') || '{}'); } catch (e) {}
+  if (!s.logo) return;
+  var l = document.getElementById('navLogo');
+  if (l) l.innerHTML = '<img src="' + s.logo + '">';
+  var fl = document.getElementById('footerLogo');
+  if (fl) fl.innerHTML = '<img src="' + s.logo + '" style="width:100%;height:100%;object-fit:contain;border-radius:13px">';
+}
+function applyCover() {
+  var s = {};
+  try { s = JSON.parse(localStorage.getItem('ea_settings') || '{}'); } catch (e) {}
+  var h = document.getElementById('heroBanner');
+  if (!h) return;
+  if (s.cover) {
+    h.style.backgroundImage = 'url(' + s.cover + ')';
+    h.classList.add('has-cover');
+  }
+}
+
+/* ---------- COUNTRIES ---------- */
+var COUNTRIES = [
+  { c: 'ET', f: '🇪🇹', d: '+251' }, { c: 'KE', f: '🇰🇪', d: '+254' },
+  { c: 'EG', f: '🇪🇬', d: '+20' }, { c: 'SA', f: '🇸🇦', d: '+966' },
+  { c: 'AE', f: '🇦🇪', d: '+971' }, { c: 'US', f: '🇺🇸', d: '+1' },
+  { c: 'GB', f: '🇬🇧', d: '+44' }, { c: 'FR', f: '🇫🇷', d: '+33' },
+  { c: 'DE', f: '🇩🇪', d: '+49' }, { c: 'IT', f: '🇮🇹', d: '+39' },
+  { c: 'ES', f: '🇪🇸', d: '+34' }, { c: 'TR', f: '🇹🇷', d: '+90' },
+  { c: 'IN', f: '🇮🇳', d: '+91' }, { c: 'CN', f: '🇨🇳', d: '+86' }
+];
+function populateCountries(ids) {
+  ids = ids || ['regCountry', 'apCountry'];
+  for (var k = 0; k < ids.length; k++) {
+    var s = document.getElementById(ids[k]);
+    if (!s) continue;
+    var h = '';
+    for (var i = 0; i < COUNTRIES.length; i++) {
+      var x = COUNTRIES[i];
+      h += '<option value="' + x.d + '">' + x.f + ' ' + x.c + ' ' + x.d + '</option>';
+    }
+    s.innerHTML = h;
+    s.value = '+251';
+  }
+}
+function populateCountrySelect(sel, def) {
+  if (!sel) return;
+  var h = '';
+  for (var i = 0; i < COUNTRIES.length; i++) {
+    var x = COUNTRIES[i];
+    h += '<option value="' + x.d + '">' + x.f + ' ' + x.c + ' ' + x.d + '</option>';
+  }
+  sel.innerHTML = h;
+  sel.value = def || '+251';
+}
+
+/* ---------- MODEL CODE GENERATOR ---------- */
+function generateModelCode(existingCodes) {
+  existingCodes = existingCodes || [];
+  var used = {};
+  for (var i = 0; i < existingCodes.length; i++) used[existingCodes[i]] = true;
+  var n = 1;
+  while (used['M-' + String(n).padStart(3, '0')]) n++;
+  return 'M-' + String(n).padStart(3, '0');
+}
+function ensureModelCodes() {
+  var db = loadDB();
+  var changed = false;
+  var used = [];
+  for (var i = 0; i < db.profiles.length; i++) {
+    if (db.profiles[i].code) used.push(db.profiles[i].code);
+  }
+  for (var j = 0; j < db.profiles.length; j++) {
+    if (!db.profiles[j].code) {
+      var c = generateModelCode(used);
+      db.profiles[j].code = c;
+      used.push(c);
+      changed = true;
+    }
+  }
+  if (changed) saveDB(db);
+  return changed;
+}
+
+/* ---------- INIT ---------- */
+document.addEventListener('DOMContentLoaded', function() {
+  applyTheme();
+  renderLangMenu();
+  applyLang();
+  applyLogo();
+  try { ensureModelCodes(); } catch (e) {}
+});
+
+document.addEventListener('click', function() {
+  var all = document.querySelectorAll('.lang-wrap,.notif-wrap,.user-menu-wrap');
+  for (var i = 0; i < all.length; i++) all[i].classList.remove('open');
+  var ep = document.getElementById('emojiPanel');
+  if (ep) ep.classList.remove('show');
+});
+
+try { console.log('[Amanda] shared.js v3.0 loaded. LANG=' + LANG + ' THEME=' + THEME); } catch (e) {}
